@@ -8,6 +8,7 @@ import { SubmitCheckoutButton } from "./SubmitCheckoutButton";
 import { CheckoutSidebar } from "./CheckoutSidebar";
 import { AccountDisplay } from "./AccountDisplay";
 import { ShippingSelector } from "./ShippingSelector";
+import Logo from "../../../components/header/Logo";
 
 type AccountCheckoutProps = {
   cart?: any;
@@ -18,14 +19,14 @@ export function AccountCheckout({ cart }: AccountCheckoutProps) {
     <div className="flex flex-col lg:flex-row justify-center">
       <div className="flex justify-center items-center lg:hidden py-5">
         <Link href="/" aria-label="Go to home page">
-          <EpIcon className="h-8 w-auto relative" />
+          <Logo />
         </Link>
       </div>
       <div className="flex flex-col lg:flex-row items-start flex-only-grow max-w-[90rem]">
         <div className="flex flex-col px-5 lg:px-20 lg:w-[37.5rem] flex-1 lg:py-20 gap-10">
           <div className="justify-center items-center hidden lg:flex py-5">
             <Link href="/" aria-label="Go to home page">
-              <EpIcon className="h-12 w-auto relative" />
+              <Logo />
             </Link>
           </div>
           <Separator />
