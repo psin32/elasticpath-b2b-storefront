@@ -17,6 +17,8 @@ import { ResourcePage, SubscriptionOffering } from "@moltin/sdk";
 import SubscriptionOfferPlans from "../SubscriptionOfferPlans";
 import { toast } from "react-toastify";
 import ProductExtensions from "../ProductExtensions";
+import { useState } from "react";
+import QuantitySelector from "../QuantitySelector";
 
 export const VariationProductDetail = ({
   variationProduct,
@@ -52,6 +54,7 @@ export function VariationProductContainer({
   const {
     meta: { original_display_price },
   } = response;
+  const [quantity, setQuantity] = useState<number>(1);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,7 +116,7 @@ export function VariationProductContainer({
     const price_type = formData.get("price_type")?.toString() || "";
     if (price_type === "" || price_type === "one_time") {
       mutateAddItem(
-        { productId: response.id, quantity: 1, data },
+        { productId: response.id, quantity, data },
         {
           onError: (response: any) => {
             if (response?.errors) {
@@ -135,7 +138,7 @@ export function VariationProductContainer({
         data: {
           type: "subscription_item",
           id: price_type,
-          quantity: 1,
+          quantity,
           subscription_configuration: {
             plan: planId,
           },
@@ -172,6 +175,7 @@ export function VariationProductContainer({
               <PersonalisedInfo
                 custom_inputs={response.attributes.custom_inputs}
               />
+              <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
               <StatusButton
                 disabled={product.kind === "base-product"}
                 type="submit"

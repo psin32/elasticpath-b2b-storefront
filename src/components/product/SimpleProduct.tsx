@@ -16,6 +16,8 @@ import { ResourcePage, SubscriptionOffering } from "@moltin/sdk";
 import SubscriptionOfferPlans from "./SubscriptionOfferPlans";
 import { toast } from "react-toastify";
 import ProductExtensions from "./ProductExtensions";
+import { useState } from "react";
+import QuantitySelector from "./QuantitySelector";
 
 interface ISimpleProductDetail {
   simpleProduct: SimpleProduct;
@@ -47,6 +49,7 @@ function SimpleProductContainer({
     mutate: mutateAddSubscriptionItem,
     isPending: isPendingSubscriptionItem,
   } = useScopedAddSubscriptionItemToCart();
+  const [quantity, setQuantity] = useState<number>(1);
 
   const { main_image, response, otherImages } = product;
   const { extensions } = response.attributes;
@@ -88,7 +91,7 @@ function SimpleProductContainer({
     const price_type = formData.get("price_type")?.toString() || "";
     if (price_type === "" || price_type === "one_time") {
       mutateAddItem(
-        { productId: response.id, quantity: 1, data },
+        { productId: response.id, quantity, data },
         {
           onError: (response: any) => {
             if (response?.errors) {
@@ -110,7 +113,7 @@ function SimpleProductContainer({
         data: {
           type: "subscription_item",
           id: price_type,
-          quantity: 1,
+          quantity,
           subscription_configuration: {
             plan: planId,
           },
@@ -146,6 +149,7 @@ function SimpleProductContainer({
               <PersonalisedInfo
                 custom_inputs={response.attributes?.custom_inputs}
               />
+              <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
               <StatusButton
                 type="submit"
                 status={
