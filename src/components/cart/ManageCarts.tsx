@@ -176,12 +176,14 @@ export function ManageCarts({ token }: ManageCartsProps) {
                           <tr
                             key={cart.id}
                             className={
-                              cartIdInCookie === cart.id ? "bg-green-50" : ""
+                              cartIdInCookie === cart.id
+                                ? "bg-brand-primary/5"
+                                : ""
                             }
                           >
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-800 sm:pl-6 w-1/4">
                               {cartIdInCookie === cart.id && (
-                                <span className="inline-flex items-center rounded-md bg-green-300 px-2 text-[10px] text-green-900 ring-1 ring-inset ring-green-600/20 mb-2">
+                                <span className="inline-flex items-center rounded-md bg-brand-primary/40 px-2 text-[10px] text-black ring-1 ring-inset ring-green-600/20 mb-2">
                                   Selected Cart
                                 </span>
                               )}
