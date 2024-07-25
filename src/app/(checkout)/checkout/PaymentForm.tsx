@@ -9,6 +9,8 @@ export function PaymentForm() {
     setOpenTab(openTab === tab ? 0 : tab);
   };
 
+  const plpView = process.env.NEXT_PUBLIC_DEFAULT_PLP_VIEW || "grid";
+
   return (
     <fieldset className="flex flex-col gap-6 self-stretch">
       <div>
@@ -58,43 +60,44 @@ export function PaymentForm() {
               </div>
             )}
           </div> */}
-
-          <div className="border rounded-lg overflow-hidden shadow-md">
-            <div
-              className="cursor-pointer p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition"
-              onClick={() => toggleTab(3)}
-            >
-              <h2 className="text-lg font-medium text-gray-800">
-                Purchase Order
-              </h2>
-              {openTab === 3 ? (
-                <ChevronUpIcon className="h-5 w-5 text-gray-800" />
-              ) : (
-                <ChevronDownIcon className="h-5 w-5 text-gray-800" />
-              )}
-            </div>
-            {openTab === 3 && (
-              <div className="p-4 bg-gray-50">
-                <form>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Purchase Order Number
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                    />
-                  </div>
-                  {/* <button
+          {plpView === "list" && (
+            <div className="border rounded-lg overflow-hidden shadow-md">
+              <div
+                className="cursor-pointer p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition"
+                onClick={() => toggleTab(3)}
+              >
+                <h2 className="text-lg font-medium text-gray-800">
+                  Purchase Order
+                </h2>
+                {openTab === 3 ? (
+                  <ChevronUpIcon className="h-5 w-5 text-gray-800" />
+                ) : (
+                  <ChevronDownIcon className="h-5 w-5 text-gray-800" />
+                )}
+              </div>
+              {openTab === 3 && (
+                <div className="p-4 bg-gray-50">
+                  <form>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Purchase Order Number
+                      </label>
+                      <input
+                        type="text"
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                      />
+                    </div>
+                    {/* <button
                     type="submit"
                     className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
                   >
                     Submit
                   </button> */}
-                </form>
-              </div>
-            )}
-          </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </fieldset>
