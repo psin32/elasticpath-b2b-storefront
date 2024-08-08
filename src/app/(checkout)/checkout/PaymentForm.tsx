@@ -2,14 +2,28 @@
 import React, { useState } from "react";
 import { PaymentElement } from "@stripe/react-stripe-js";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { useFormContext } from "react-hook-form";
+import { CheckoutForm as CheckoutFormSchemaType } from "../../../components/checkout/form-schema/checkout-form-schema";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../../../components/form/Form";
+import { Input } from "../../../components/input/Input";
 
 export function PaymentForm() {
   const [openTab, setOpenTab] = useState(1);
+  const { control, setValue } = useFormContext<CheckoutFormSchemaType>();
+
   const toggleTab = (tab: number) => {
+    setValue("paymentMethod", tab === 1 ? "ep_payment" : "manual");
     setOpenTab(openTab === tab ? 0 : tab);
   };
 
-  const plpView = process.env.NEXT_PUBLIC_DEFAULT_PLP_VIEW || "grid";
+  const enablePurchaseOrderCheckout =
+    process.env.NEXT_PUBLIC_ENABLE_PURCHASE_ORDER_CHECKOUT === "true" || false;
 
   return (
     <fieldset className="flex flex-col gap-6 self-stretch">
@@ -60,7 +74,7 @@ export function PaymentForm() {
               </div>
             )}
           </div> */}
-          {plpView === "list" && (
+          {enablePurchaseOrderCheckout && (
             <div className="border rounded-lg overflow-hidden shadow-md">
               <div
                 className="cursor-pointer p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition"
@@ -78,21 +92,23 @@ export function PaymentForm() {
               {openTab === 3 && (
                 <div className="p-4 bg-gray-50">
                   <form>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Purchase Order Number
-                      </label>
-                      <input
-                        type="text"
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                      />
-                    </div>
-                    {/* <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                  >
-                    Submit
-                  </button> */}
+                    <FormField
+                      control={control}
+                      name="purchaseOrderNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Purchase Order Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              sizeKind="mediumUntilSm"
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </form>
                 </div>
               )}
@@ -100,6 +116,19 @@ export function PaymentForm() {
           )}
         </div>
       </div>
+      <FormField
+        control={control}
+        name="paymentMethod"
+        defaultValue="ep_payment"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Input {...field} sizeKind="mediumUntilSm" type="hidden" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </fieldset>
   );
 }
