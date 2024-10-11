@@ -41,7 +41,7 @@ export async function AccountSwitcher() {
             selectedAccountId === value.account_id
               ? "bg-brand-highlight/10"
               : "text-gray-900"
-          } group flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-brand-primary hover:text-white transition-color ease-in-out duration-100 ring-0 outline-0 focus-visible:ring-0`}
+          } group flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-brand-primary hover:text-white transition-color ease-in-out duration-100`}
           icon={<Icon className="mr-2 h-5 w-5" aria-hidden="true" />}
         >
           {value.account_name}

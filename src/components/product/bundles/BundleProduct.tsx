@@ -22,28 +22,38 @@ import PersonalisedInfo from "../PersonalisedInfo";
 import ProductHighlights from "../ProductHighlights";
 import Reviews from "../../reviews/yotpo/Reviews";
 import { ResourcePage, SubscriptionOffering } from "@moltin/sdk";
+import { Content as BuilderContent } from "@builder.io/sdk-react";
+import { cmsConfig } from "../../../lib/resolve-cms-env";
+import { builder } from "@builder.io/sdk";
+import { builderComponent } from "../../../components/builder-io/BuilderComponents";
+builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
 
 interface IBundleProductDetail {
   bundleProduct: BundleProduct;
   offerings: ResourcePage<SubscriptionOffering, never>;
+  content: any;
 }
 
 const BundleProductDetail = ({
   bundleProduct,
   offerings,
+  content,
 }: IBundleProductDetail): JSX.Element => {
   return (
     <BundleProductProvider bundleProduct={bundleProduct}>
-      <BundleProductContainer offerings={offerings} />
+      <BundleProductContainer offerings={offerings} content={content} />
     </BundleProductProvider>
   );
 };
 
 function BundleProductContainer({
   offerings,
+  content,
 }: {
   offerings: ResourcePage<SubscriptionOffering, never>;
+  content: any;
 }): JSX.Element {
+  const { enableBuilderIO } = cmsConfig;
   const { configuredProduct, selectedOptions, components } = useBundle();
   const { useScopedAddBundleProductToCart } = useCart();
 
@@ -53,6 +63,8 @@ function BundleProductContainer({
   const {
     meta: { original_display_price },
   } = response;
+  const enableClickAndCollect =
+    process.env.NEXT_PUBLIC_ENABLE_CLICK_AND_COLLECT === "true";
 
   const submit = useCallback(
     async (values: any) => {
@@ -61,19 +73,21 @@ function BundleProductContainer({
           additional_information: [],
         },
       };
-      {
-        response?.attributes?.custom_inputs &&
-          Object.keys(response?.attributes?.custom_inputs).map((input) => {
-            const value = values[input];
-            if (value) {
-              const info = {
-                key: response.attributes.custom_inputs[input].name,
-                value,
-              };
-              data.custom_inputs.additional_information.push(info);
-            }
-          });
+      if (enableClickAndCollect) {
+        data.custom_inputs.location = {};
+        data.custom_inputs.location.delivery_mode = "Home Delivery";
       }
+      response?.attributes?.custom_inputs &&
+        Object.keys(response?.attributes?.custom_inputs).map((input) => {
+          const value = values[input];
+          if (value) {
+            const info = {
+              key: response.attributes.custom_inputs[input].name,
+              value,
+            };
+            data.custom_inputs.additional_information.push(info);
+          }
+        });
       mutate({
         productId: configuredProduct.response.id,
         selectedOptions: formSelectedOptionsToData(values.selectedOptions),
@@ -130,6 +144,14 @@ function BundleProductContainer({
             </Form>
           </div>
         </div>
+        {enableBuilderIO && content && (
+          <BuilderContent
+            model="page"
+            content={content}
+            apiKey={process.env.NEXT_PUBLIC_BUILDER_IO_KEY || ""}
+            customComponents={builderComponent}
+          />
+        )}
         <Reviews product={response} />
       </div>
     </Formik>

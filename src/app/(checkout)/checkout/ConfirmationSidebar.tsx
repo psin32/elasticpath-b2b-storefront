@@ -2,7 +2,10 @@
 import { Separator } from "../../../components/separator/Separator";
 import { CartDiscountsReadOnly } from "../../../components/cart/CartDiscounts";
 import * as React from "react";
-import { groupCartItems, useCurrencies } from "../../../react-shopper-hooks";
+import {
+  groupCartItems,
+  useCurrencies,
+} from "../../../react-shopper-hooks";
 import {
   ItemSidebarHideable,
   ItemSidebarItems,
@@ -30,12 +33,7 @@ export function ConfirmationSidebar() {
 
   const groupedItems: any = groupCartItems(cart.data);
 
-  const items = groupedItems.regular.concat(
-    groupedItems.custom.filter(
-      (item: any) => !item.sku.startsWith("__shipping_"),
-    ),
-    groupedItems.subscription,
-  );
+  const items = groupedItems.regular.concat(groupedItems.custom.filter((item: any) => !item.sku.startsWith("__shipping_")), groupedItems.subscription)
 
   const shippingMethodCustomItem = groupedItems.custom.find((item: any) =>
     item.sku.startsWith("__shipping_"),
@@ -57,13 +55,13 @@ export function ConfirmationSidebar() {
 
   const formattedTotalAmountInclShipping =
     meta?.display_price?.with_tax?.amount !== undefined &&
-    shippingAmount !== undefined &&
-    storeCurrency
+      shippingAmount !== undefined &&
+      storeCurrency
       ? resolveTotalInclShipping(
-          shippingAmount,
-          meta.display_price.with_tax.amount,
-          storeCurrency,
-        )
+        shippingAmount,
+        meta.display_price.with_tax.amount,
+        storeCurrency,
+      )
       : undefined;
 
   return (
@@ -97,6 +95,7 @@ export function ConfirmationSidebar() {
           <div className="flex justify-between items-baseline self-stretch">
             <span>Total</span>
             <div className="flex items-center gap-2.5">
+              <span>{meta?.display_price?.with_tax?.currency}</span>
               <span className="font-medium text-2xl">
                 {formattedTotalAmountInclShipping}
               </span>

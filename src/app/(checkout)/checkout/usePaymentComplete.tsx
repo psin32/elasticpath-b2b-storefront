@@ -55,7 +55,7 @@ export function usePaymentComplete(
   );
   const { mutateAsync: mutateConfirmOrder } = useOrderConfirm();
 
-  const stripe = useStripe();
+  const stripe = useStripe() as any;
   const elements = useElements();
 
   const paymentComplete = useMutation({
@@ -67,6 +67,7 @@ export function usePaymentComplete(
         shippingMethod,
         purchaseOrderNumber,
         paymentMethod,
+        cardId,
       } = data;
 
       const client = getEpccImplicitClient();
@@ -151,13 +152,12 @@ export function usePaymentComplete(
         };
       }
 
-      if (paymentMethod === "ep_payment") {
+      if (paymentMethod != "manual") {
         paymentRequest = {
           orderId: createdOrder.data.id,
           payment: {
             gateway: "elastic_path_payments_stripe",
             method: "purchase",
-            payment_method_types: ["card"],
           },
         };
       }
@@ -165,12 +165,47 @@ export function usePaymentComplete(
       const subsItem = createdOrder.included.items.filter(
         (item: any) => item.subscription_offering_id,
       );
-      if (!("guest" in data) && stripe_customer_id && subsItem?.length > 0) {
+
+      if (cardId && paymentMethod === "saved_card") {
+        paymentRequest.payment.payment = cardId;
+      }
+
+      if (stripe_customer_id) {
         paymentRequest.payment.options = {
           customer: stripe_customer_id,
           setup_future_usage: "off_session",
         };
       }
+
+      if (
+        !("guest" in data) &&
+        stripe_customer_id &&
+        paymentMethod === "ep_payment"
+      ) {
+        const { error, paymentMethod } = await stripe?.createPaymentMethod({
+          elements,
+          params: {
+            billing_details: {
+              name:
+                billingAddress?.first_name + " " + billingAddress?.last_name,
+              address: {
+                country: billingAddress?.country,
+                postal_code: billingAddress?.postcode,
+                state: billingAddress?.region,
+                city: billingAddress?.city,
+                line1: billingAddress?.line_1,
+                line2: billingAddress?.line_2,
+              },
+            },
+          },
+        });
+        paymentRequest.payment.payment = paymentMethod.id;
+        paymentRequest.payment.options = {
+          customer: stripe_customer_id,
+          setup_future_usage: "off_session",
+        };
+      }
+
       /**
        * 2. Start payment against the order
        */
@@ -186,7 +221,7 @@ export function usePaymentComplete(
         },
       });
 
-      if (paymentMethod === "ep_payment") {
+      if (paymentMethod === "ep_payment" && subsItem?.length == 0) {
         /**
          * 3. Confirm the payment with Stripe
          */
@@ -223,9 +258,6 @@ export function usePaymentComplete(
           transactionId: confirmedPayment.data.id,
           options: {},
         });
-      }
-
-      if (paymentMethod === "manual") {
       }
 
       return {

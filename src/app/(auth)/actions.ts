@@ -154,7 +154,6 @@ export async function selectedAccount(args: FormData) {
   });
 
   revalidatePath("/account");
-  redirect("/");
 }
 
 export async function register(data: FormData) {

@@ -1,6 +1,5 @@
 "use client";
 import { Popover } from "@headlessui/react";
-import { ReactNode } from "react";
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
@@ -10,16 +9,21 @@ import {
   UserIcon,
   UserPlusIcon,
   ShoppingBagIcon,
+  CreditCardIcon,
+  ArrowPathRoundedSquareIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { logout } from "../../../app/(auth)/actions";
 import { useAuthedAccountMember } from "../../../react-shopper-hooks";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 import { useFloating } from "@floating-ui/react";
+import { useSession } from "next-auth/react";
 
 export function AccountMenu() {
+  const router = useRouter();
   const { data } = useAuthedAccountMember();
+  const { data: session, status } = useSession();
 
   const pathname = usePathname();
 
@@ -34,6 +38,9 @@ export function AccountMenu() {
       {({ close }) => {
         async function logoutAction() {
           await logout();
+          session?.user &&
+            status == "authenticated" &&
+            router.push("/admin/dashboard");
           close();
         }
 
@@ -152,6 +159,40 @@ export function AccountMenu() {
                       <div>
                         <Popover.Button
                           as={Link}
+                          href="/account/subscriptions"
+                          className={`${
+                            pathname.startsWith("/account/subscriptions")
+                              ? "font-semibold"
+                              : "text-gray-900"
+                          } group flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-brand-primary hover:text-white transition-color ease-in-out duration-100`}
+                        >
+                          <ArrowPathRoundedSquareIcon
+                            className="mr-2 h-5 w-5"
+                            aria-hidden="true"
+                          />
+                          Subscription
+                        </Popover.Button>
+                      </div>
+                      <div>
+                        <Popover.Button
+                          as={Link}
+                          href="/account/cards"
+                          className={`${
+                            pathname.startsWith("/account/cards")
+                              ? "font-semibold"
+                              : "text-gray-900"
+                          } group flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-brand-primary hover:text-white transition-color ease-in-out duration-100`}
+                        >
+                          <CreditCardIcon
+                            className="mr-2 h-5 w-5"
+                            aria-hidden="true"
+                          />
+                          Cards
+                        </Popover.Button>
+                      </div>
+                      <div>
+                        <Popover.Button
+                          as={Link}
                           href="/account/addresses"
                           className={`${
                             pathname.startsWith("/account/addresses")
@@ -180,7 +221,9 @@ export function AccountMenu() {
                               className="mr-2 h-5 w-5"
                               aria-hidden="true"
                             />
-                            Logout
+                            {session?.user && status == "authenticated"
+                              ? "Back To Admin"
+                              : "Logout"}
                           </button>
                         </form>
                       </div>

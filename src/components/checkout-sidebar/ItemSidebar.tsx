@@ -41,6 +41,7 @@ export function ItemSidebarSumTotal({ meta }: { meta: CartState["meta"] }) {
     <div className="flex justify-between items-baseline self-stretch">
       <span>Total</span>
       <div className="flex items-center gap-2.5">
+        <span>{meta?.display_price?.with_tax?.currency}</span>
         <span className="font-medium text-2xl">
           {meta?.display_price?.with_tax?.formatted}
         </span>

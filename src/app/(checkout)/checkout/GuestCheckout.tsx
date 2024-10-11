@@ -9,7 +9,6 @@ import { SubmitCheckoutButton } from "./SubmitCheckoutButton";
 import { Separator } from "../../../components/separator/Separator";
 import * as React from "react";
 import { CheckoutSidebar } from "./CheckoutSidebar";
-import Logo from "../../../components/header/Logo";
 
 type GuestCheckoutProps = {
   cart?: any;
@@ -20,14 +19,14 @@ export async function GuestCheckout({ cart }: GuestCheckoutProps) {
     <div className="flex flex-col lg:flex-row justify-center">
       <div className="flex justify-center items-center lg:hidden py-5">
         <Link href="/" aria-label="Go to home page">
-          <Logo />
+          <EpIcon className="h-8 w-auto relative" />
         </Link>
       </div>
       <div className="flex flex-col lg:flex-row items-start flex-only-grow max-w-[90rem]">
         <div className="flex flex-col self-stretch px-5 lg:px-20 lg:w-[37.5rem] flex-1 lg:py-20 items-center gap-10">
           <div className="justify-center items-center hidden lg:flex py-5">
             <Link href="/" aria-label="Go to home page">
-              <Logo />
+              <EpIcon className="h-12 w-auto relative" />
             </Link>
           </div>
           <Separator />

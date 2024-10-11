@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import NodeMenu from "./NodeMenu";
+import NodeMenu from "./NodeMenuAlgolia";
 import { ProductsProvider } from "./ProductsProvider";
 import { ShopperCatalogResourcePage } from "@moltin/sdk";
 import { BreadcrumbLookup } from "../../lib/types/breadcrumb-lookup";
@@ -10,16 +10,24 @@ import MobileFilters from "./MobileFilters";
 import { useStore, ShopperProduct } from "../../react-shopper-hooks";
 import HitsElasticPath from "./HitsElasticPath";
 import PaginationElasticPath from "./PaginationElasticPath";
+import { Content as BuilderContent } from "@builder.io/sdk-react";
+import { cmsConfig } from "../../lib/resolve-cms-env";
+import { builder } from "@builder.io/sdk";
+import { builderComponent } from "../../components/builder-io/BuilderComponents";
+builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
 
 interface ISearchResults {
   page?: ShopperCatalogResourcePage<ShopperProduct> | any;
   nodes?: string[];
+  content: any;
 }
 
 export default function SearchResultsElasticPath({
   page,
   nodes,
+  content,
 }: ISearchResults): JSX.Element {
+  const { enableBuilderIO } = cmsConfig;
   let [showFilterMenu, setShowFilterMenu] = useState(false);
   const { nav, client } = useStore() as any;
   const lookup = buildBreadcrumbLookup(nav ?? []);
@@ -49,6 +57,14 @@ export default function SearchResultsElasticPath({
           </div>
         </div>
         <hr />
+        {enableBuilderIO && (
+          <BuilderContent
+            model="page"
+            content={content}
+            apiKey={process.env.NEXT_PUBLIC_BUILDER_IO_KEY || ""}
+            customComponents={builderComponent}
+          />
+        )}
         <div className="grid grid-cols-[auto_1fr] gap-8">
           <div className="hidden w-[14rem] md:block lg:w-[16rem]">
             <h3 className="font-semibold">Category</h3>
