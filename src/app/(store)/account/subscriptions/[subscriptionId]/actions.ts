@@ -6,7 +6,7 @@ import { gateway, SubscriptionsStateAction } from "@moltin/sdk";
 import { getServerSideCredentialsClientWihoutAccountToken } from "../../../../../lib/epcc-server-side-credentials-client";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2024-06-20",
+  apiVersion: "2024-09-30.acacia",
   stripeAccount: epPaymentsEnvData.accountId,
 });
 
