@@ -1,14 +1,9 @@
-"use client";
 import { ReactNode } from "react";
 import { Order, OrderItem as OrderItemType } from "@elasticpath/js-sdk";
 import { ProductThumbnail } from "./[orderId]/ProductThumbnail";
 import Link from "next/link";
 import { formatIsoDateString } from "../../../../lib/format-iso-date-string";
-import { StatusButton } from "../../../../components/button/StatusButton";
-import { getEpccImplicitClient } from "../../../../lib/epcc-implicit-client";
-import { getCookie } from "cookies-next";
-import { COOKIE_PREFIX_KEY } from "../../../../lib/resolve-cart-env";
-import { useCart } from "../../../../react-shopper-hooks";
+import { Reorder } from "./Reorder";
 
 export type OrderItemProps = {
   children?: ReactNode;
@@ -18,27 +13,11 @@ export type OrderItemProps = {
 };
 
 export function OrderItem({ children, order, orderItems }: OrderItemProps) {
-  const { useScopedReorderToCart } = useCart();
-  const { mutate: mutateReorder, isPending: isPendingReorder } =
-    useScopedReorderToCart();
-
   // Sorted order items are used to determine which image to show
   // showing the most expensive item's image
   const sortedOrderItems = orderItems.sort(
     (a, b) => b.unit_price.amount - a.unit_price.amount,
   );
-
-  const handleReorder = async () => {
-    mutateReorder({
-      data: {
-        type: "order_items",
-        order_id: order.id,
-      },
-      options: {
-        add_all_or_nothing: false,
-      },
-    });
-  };
 
   return (
     <>
@@ -69,18 +48,7 @@ export function OrderItem({ children, order, orderItems }: OrderItemProps) {
           <span>{order.meta.display_price.with_tax.formatted}</span>
         </div>
       </section>
-      <div className="flex gap-5 w-full py-5 ">
-        <div className="flex flex-1 flex-col gap-y-1.5"></div>
-        <div className="flex flex-col sm:flex">
-          <StatusButton
-            onClick={handleReorder}
-            className="text-sm py-2"
-            status={isPendingReorder ? "loading" : "idle"}
-          >
-            Reorder
-          </StatusButton>
-        </div>
-      </div>
+      <Reorder orderId={order.id}></Reorder>
     </>
   );
 }
