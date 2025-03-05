@@ -28,6 +28,7 @@ import { RecommendedProducts } from "../recommendations/RecommendationProducts";
 import ProductRelationship from "./related-products/ProductRelationship";
 builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
 import moment from "moment";
+import Link from "next/link";
 
 interface ISimpleProductDetail {
   simpleProduct: SimpleProduct;
@@ -254,11 +255,16 @@ function SimpleProductContainer({
                         (order: any, index: number) => (
                           <tr key={index} className="border border-gray-300">
                             <td className="border border-gray-300 px-4 py-2">
-                              {moment(
-                                order.meta.timestamps.created_at,
-                                moment.ISO_8601,
-                                true,
-                              ).format("DD MMM YYYY HH:mm:ss")}
+                              <Link
+                                href={`/account/orders/${order.order_id}`}
+                                className="hover:text-brand-primary hover:underline"
+                              >
+                                {moment(
+                                  order.meta.timestamps.created_at,
+                                  moment.ISO_8601,
+                                  true,
+                                ).format("DD MMM YYYY HH:mm:ss")}
+                              </Link>
                             </td>
                             <td className="border border-gray-300 px-4 py-2">
                               {order.quantity}
