@@ -43,7 +43,7 @@ export default function PreviousOrders({ productId }: PreviousOrdersProps) {
           setIsOpen(true);
         }}
         variant="link"
-        className="m-0 mb-4 p-0 text-md text-brand-primary underline"
+        className="m-0 mb-4 p-0 text-md text-pink-700 underline"
       >
         Check Previous Orders
       </Button>
