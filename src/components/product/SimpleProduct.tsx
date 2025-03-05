@@ -251,8 +251,9 @@ function SimpleProductContainer({
                       </tr>
                     </thead>
                     <tbody>
-                      {purchaseHistory?.data.map(
-                        (order: any, index: number) => (
+                      {purchaseHistory?.data
+                        .slice(0, 3)
+                        .map((order: any, index: number) => (
                           <tr key={index} className="border border-gray-300">
                             <td className="border border-gray-300 px-4 py-2">
                               <Link
@@ -270,8 +271,7 @@ function SimpleProductContainer({
                               {order.quantity}
                             </td>
                           </tr>
-                        ),
-                      )}
+                        ))}
                     </tbody>
                   </table>
                 </div>
