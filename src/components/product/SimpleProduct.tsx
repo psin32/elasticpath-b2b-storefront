@@ -2,6 +2,7 @@
 import type { SimpleProduct } from "../../react-shopper-hooks";
 import {
   SimpleProductProvider,
+  useAuthedAccountMember,
   useCart,
   useSimpleProduct,
 } from "../../react-shopper-hooks";
@@ -25,6 +26,7 @@ import { builder } from "@builder.io/sdk";
 import { builderComponent } from "../../components/builder-io/BuilderComponents";
 import { RecommendedProducts } from "../recommendations/RecommendationProducts";
 import ProductRelationship from "./related-products/ProductRelationship";
+import PreviousOrders from "./PreviousOrders";
 builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
 
 interface ISimpleProductDetail {
@@ -70,6 +72,7 @@ function SimpleProductContainer({
     mutate: mutateAddSubscriptionItem,
     isPending: isPendingSubscriptionItem,
   } = useScopedAddSubscriptionItemToCart();
+  const { selectedAccountToken } = useAuthedAccountMember();
   const [quantity, setQuantity] = useState<number>(1);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
@@ -186,6 +189,9 @@ function SimpleProductContainer({
               <span className="uppercase inline-flex items-center rounded-sm bg-white px-2 py-1 text-sm font-medium text-pink-700 ring-1 ring-inset ring-pink-700 mb-6 mr-2">
                 {response.meta.sale_id}
               </span>
+            )}
+            {selectedAccountToken?.account_id && (
+              <PreviousOrders productId={id}></PreviousOrders>
             )}
             <div className="flex flex-col gap-6 md:gap-10">
               <input

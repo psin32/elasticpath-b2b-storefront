@@ -1,5 +1,6 @@
 "use client";
 import {
+  useAuthedAccountMember,
   useCart,
   useVariationProduct,
   VariationProduct,
@@ -26,6 +27,7 @@ import { builder } from "@builder.io/sdk";
 import { builderComponent } from "../../../components/builder-io/BuilderComponents";
 import { RecommendedProducts } from "../../recommendations/RecommendationProducts";
 import ProductRelationship from "../related-products/ProductRelationship";
+import PreviousOrders from "../PreviousOrders";
 builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
 
 export const VariationProductDetail = ({
@@ -69,6 +71,7 @@ export function VariationProductContainer({
     mutate: mutateAddSubscriptionItem,
     isPending: isPendingSubscriptionItem,
   } = useScopedAddSubscriptionItemToCart();
+  const { selectedAccountToken } = useAuthedAccountMember();
 
   const { response, main_image, otherImages, baseProduct } = product;
   const { extensions } = response.attributes;
@@ -214,6 +217,10 @@ export function VariationProductContainer({
             </span>
           )}
           <form onSubmit={(e: any) => handleSubmit(e)}>
+            {selectedAccountToken?.account_id && (
+              <PreviousOrders productId={id}></PreviousOrders>
+            )}
+
             <div className="flex flex-col gap-4 md:gap-6">
               <input
                 type="text"
