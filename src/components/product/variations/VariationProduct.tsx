@@ -27,7 +27,7 @@ import { builder } from "@builder.io/sdk";
 import { builderComponent } from "../../../components/builder-io/BuilderComponents";
 import { RecommendedProducts } from "../../recommendations/RecommendationProducts";
 import ProductRelationship from "../related-products/ProductRelationship";
-import PreviousOrders from "../PreviousOrders";
+import moment from "moment";
 builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
 
 export const VariationProductDetail = ({
@@ -35,11 +35,13 @@ export const VariationProductDetail = ({
   offerings,
   content,
   relationship,
+  purchaseHistory,
 }: {
   variationProduct: VariationProduct;
   offerings: ResourcePage<SubscriptionOffering, never>;
   content: any;
   relationship: any[];
+  purchaseHistory: any;
 }): JSX.Element => {
   return (
     <VariationProductProvider variationProduct={variationProduct}>
@@ -47,6 +49,7 @@ export const VariationProductDetail = ({
         offerings={offerings}
         content={content}
         relationship={relationship}
+        purchaseHistory={purchaseHistory}
       />
     </VariationProductProvider>
   );
@@ -56,10 +59,12 @@ export function VariationProductContainer({
   offerings,
   content,
   relationship,
+  purchaseHistory,
 }: {
   offerings: ResourcePage<SubscriptionOffering, never>;
   content: any;
   relationship: any[];
+  purchaseHistory: any;
 }): JSX.Element {
   const { enableBuilderIO } = cmsConfig;
   const { product, selectedOptions } = useVariationProduct() as any;
@@ -217,10 +222,6 @@ export function VariationProductContainer({
             </span>
           )}
           <form onSubmit={(e: any) => handleSubmit(e)}>
-            {selectedAccountToken?.account_id && (
-              <PreviousOrders productId={id}></PreviousOrders>
-            )}
-
             <div className="flex flex-col gap-4 md:gap-6">
               <input
                 type="text"
@@ -263,7 +264,43 @@ export function VariationProductContainer({
                   Click & Collect
                 </StatusButton>
               )}
-
+              {purchaseHistory?.data?.length > 0 && (
+                <div>
+                  <div className="text-base font-medium uppercase lg:text-lg text-gray-800 mb-4">
+                    Previous Purchase Order History
+                  </div>
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="border border-gray-300 px-4 py-2">
+                          Purchase Date
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2">
+                          Quantity
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {purchaseHistory?.data.map(
+                        (order: any, index: number) => (
+                          <tr key={index} className="border border-gray-300">
+                            <td className="border border-gray-300 px-4 py-2">
+                              {moment(
+                                order.meta.timestamps.created_at,
+                                moment.ISO_8601,
+                                true,
+                              ).format("DD MMM YYYY HH:mm:ss")}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {order.quantity}
+                            </td>
+                          </tr>
+                        ),
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <ProductDetails product={response} />
               {extensions && <ProductHighlights extensions={extensions} />}
               {extensions && <ProductExtensions extensions={extensions} />}

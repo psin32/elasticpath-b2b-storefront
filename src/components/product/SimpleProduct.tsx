@@ -26,14 +26,15 @@ import { builder } from "@builder.io/sdk";
 import { builderComponent } from "../../components/builder-io/BuilderComponents";
 import { RecommendedProducts } from "../recommendations/RecommendationProducts";
 import ProductRelationship from "./related-products/ProductRelationship";
-import PreviousOrders from "./PreviousOrders";
 builder.init(process.env.NEXT_PUBLIC_BUILDER_IO_KEY || "");
+import moment from "moment";
 
 interface ISimpleProductDetail {
   simpleProduct: SimpleProduct;
   offerings: ResourcePage<SubscriptionOffering, never>;
   content: any;
   relationship: any[];
+  purchaseHistory: any;
 }
 
 function SimpleProductDetail({
@@ -41,6 +42,7 @@ function SimpleProductDetail({
   offerings,
   content,
   relationship,
+  purchaseHistory,
 }: ISimpleProductDetail): JSX.Element {
   return (
     <SimpleProductProvider simpleProduct={simpleProduct}>
@@ -48,6 +50,7 @@ function SimpleProductDetail({
         offerings={offerings}
         content={content}
         relationship={relationship}
+        purchaseHistory={purchaseHistory}
       />
     </SimpleProductProvider>
   );
@@ -57,10 +60,12 @@ function SimpleProductContainer({
   offerings,
   content,
   relationship,
+  purchaseHistory,
 }: {
   offerings: any;
   content: any;
   relationship: any[];
+  purchaseHistory: any;
 }): JSX.Element {
   const { enableBuilderIO } = cmsConfig;
   const { product } = useSimpleProduct() as any;
@@ -72,7 +77,6 @@ function SimpleProductContainer({
     mutate: mutateAddSubscriptionItem,
     isPending: isPendingSubscriptionItem,
   } = useScopedAddSubscriptionItemToCart();
-  const { selectedAccountToken } = useAuthedAccountMember();
   const [quantity, setQuantity] = useState<number>(1);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
 
@@ -190,9 +194,6 @@ function SimpleProductContainer({
                 {response.meta.sale_id}
               </span>
             )}
-            {selectedAccountToken?.account_id && (
-              <PreviousOrders productId={id}></PreviousOrders>
-            )}
             <div className="flex flex-col gap-6 md:gap-10">
               <input
                 type="text"
@@ -231,6 +232,43 @@ function SimpleProductContainer({
                 >
                   Click & Collect
                 </StatusButton>
+              )}
+              {purchaseHistory?.data?.length > 0 && (
+                <div>
+                  <div className="text-base font-medium uppercase lg:text-lg text-gray-800 mb-4">
+                    Previous Purchase Order History
+                  </div>
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="border border-gray-300 px-4 py-2">
+                          Purchase Date
+                        </th>
+                        <th className="border border-gray-300 px-4 py-2">
+                          Quantity
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {purchaseHistory?.data.map(
+                        (order: any, index: number) => (
+                          <tr key={index} className="border border-gray-300">
+                            <td className="border border-gray-300 px-4 py-2">
+                              {moment(
+                                order.meta.timestamps.created_at,
+                                moment.ISO_8601,
+                                true,
+                              ).format("DD MMM YYYY HH:mm:ss")}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {order.quantity}
+                            </td>
+                          </tr>
+                        ),
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               )}
               <ProductDetails product={response} />
               {extensions && <ProductHighlights extensions={extensions} />}
