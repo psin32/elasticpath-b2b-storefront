@@ -315,3 +315,14 @@ export async function getAccountDetails(accountId: string) {
     return err;
   });
 }
+
+export async function getAccountOrderDetails(account_id: string) {
+  const client = getServerSideCredentialsClientWihoutAccountToken();
+  return await client.Orders.With("items")
+    .Filter({ eq: { account_id, payment: "paid" } })
+    .All()
+    .catch((err) => {
+      console.error("Error while getting account details", err);
+      return err;
+    });
+}
