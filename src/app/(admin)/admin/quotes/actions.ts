@@ -291,7 +291,7 @@ export async function createShippingGroup(id: string, request: any) {
 }
 
 export async function getShippingGroups(id: string) {
-  const client = getServerSideCredentialsClient();
+  const client = getServerSideCredentialsClientWihoutAccountToken();
   return await client.request
     .send(
       `carts/${id}/shipping-groups`,
