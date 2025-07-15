@@ -227,8 +227,8 @@ export default function SettingsPage() {
             )}
           </div>
           <p className="text-gray-500 text-sm mb-4">
-            Choose how payments are processed by default: "Capture" (immediate
-            payment) or "Authorize" (hold funds, capture later).
+            Choose how payments are processed by default: Capture (immediate
+            payment) or Authorize (hold funds, capture later).
           </p>
           <div className="flex items-center gap-4">
             <span
