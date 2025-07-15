@@ -65,10 +65,14 @@ export default async function ProductPage({ params }: Props) {
   };
   const content = await contentData();
 
-  const offerings = await getSubscriptionOfferingByProductId(
+  let offerings: any = await getSubscriptionOfferingByProductId(
     product?.data?.[0]?.id,
     client,
   );
+
+  if (offerings.errors) {
+    offerings = { data: [] };
+  }
 
   const accountMemberCookie = retrieveAccountMemberCredentials(
     cookies(),
